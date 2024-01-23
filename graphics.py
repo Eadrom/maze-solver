@@ -16,7 +16,7 @@ class Window():
         self.__root.update_idletasks()
         self.__root.update()
 
-    def draw_line(self, line, color):
+    def draw_line(self, line, color=None):
         line.draw(self.__canvas, color)
 
     def wait_for_close(self):
@@ -49,6 +49,45 @@ class Line():
             width=2)
         canvas.pack(fill=BOTH, expand=1)
 
+class Cell():
+    def __init__(self, window, tl_point, br_point):
+        self.__top_left_point = tl_point
+        self.__bottom_right_point = br_point
+        self.__window = window
+        self.has_left_wall = True
+        self.has_top_wall = True
+        self.has_right_wall = True
+        self.has_bottom_wall = True
+
+    def draw(self):
+        if self.has_left_wall:
+            line = Line(
+                Point(self.__top_left_point.x, self.__top_left_point.y),
+                Point(self.__top_left_point.x, self.__bottom_right_point.y)
+            )
+            self.__window.draw_line(line)
+
+        if self.has_top_wall:
+            line = Line(
+                Point(self.__top_left_point.x, self.__top_left_point.y),
+                Point(self.__bottom_right_point.x, self.__top_left_point.y)
+            )
+            self.__window.draw_line(line)
+
+        if self.has_right_wall:
+            line = Line(
+                Point(self.__bottom_right_point.x, self.__top_left_point.y),
+                Point(self.__bottom_right_point.x, self.__bottom_right_point.y)
+            )
+            self.__window.draw_line(line)
+            
+        if self.has_bottom_wall:
+            line = Line(
+                Point(self.__top_left_point.x, self.__bottom_right_point.y),
+                Point(self.__bottom_right_point.x, self.__bottom_right_point.y)
+            )
+            self.__window.draw_line(line)
+            
 def main():
     pass
 
