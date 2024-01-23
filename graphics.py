@@ -51,8 +51,8 @@ class Line():
 
 class Cell():
     def __init__(self, window, tl_point, br_point):
-        self.__top_left_point = tl_point
-        self.__bottom_right_point = br_point
+        self.top_left_point = tl_point
+        self.bottom_right_point = br_point
         self.__window = window
         self.has_left_wall = True
         self.has_top_wall = True
@@ -62,32 +62,51 @@ class Cell():
     def draw(self):
         if self.has_left_wall:
             line = Line(
-                Point(self.__top_left_point.x, self.__top_left_point.y),
-                Point(self.__top_left_point.x, self.__bottom_right_point.y)
+                Point(self.top_left_point.x, self.top_left_point.y),
+                Point(self.top_left_point.x, self.bottom_right_point.y)
             )
             self.__window.draw_line(line)
 
         if self.has_top_wall:
             line = Line(
-                Point(self.__top_left_point.x, self.__top_left_point.y),
-                Point(self.__bottom_right_point.x, self.__top_left_point.y)
+                Point(self.top_left_point.x, self.top_left_point.y),
+                Point(self.bottom_right_point.x, self.top_left_point.y)
             )
             self.__window.draw_line(line)
 
         if self.has_right_wall:
             line = Line(
-                Point(self.__bottom_right_point.x, self.__top_left_point.y),
-                Point(self.__bottom_right_point.x, self.__bottom_right_point.y)
+                Point(self.bottom_right_point.x, self.top_left_point.y),
+                Point(self.bottom_right_point.x, self.bottom_right_point.y)
             )
             self.__window.draw_line(line)
-            
+
         if self.has_bottom_wall:
             line = Line(
-                Point(self.__top_left_point.x, self.__bottom_right_point.y),
-                Point(self.__bottom_right_point.x, self.__bottom_right_point.y)
+                Point(self.top_left_point.x, self.bottom_right_point.y),
+                Point(self.bottom_right_point.x, self.bottom_right_point.y)
             )
             self.__window.draw_line(line)
-            
+
+    def draw_move(self, target_cell, undo=False):
+
+        if undo is False:
+            line_color = "red"
+        else:
+            line_color = "gray"
+
+        self.center = Point(
+            self.top_left_point.x + (self.bottom_right_point.x - self.top_left_point.x) / 2,
+            self.top_left_point.y + (self.bottom_right_point.y - self.top_left_point.y) / 2
+        )
+
+        target_cell_center = Point(
+            target_cell.top_left_point.x + (target_cell.bottom_right_point.x - target_cell.top_left_point.x) / 2,
+            target_cell.top_left_point.y + (target_cell.bottom_right_point.y - target_cell.top_left_point.y) / 2
+        )
+
+        self.__window.draw_line(Line(self.center, target_cell_center), line_color)
+  
 def main():
     pass
 
