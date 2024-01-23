@@ -17,6 +17,5 @@ class Tests(unittest.TestCase):
             num_rows,
         )
 
-
 if __name__ == "__main__":
     unittest.main()
