@@ -2,7 +2,8 @@
 
 from tkinter import Tk, BOTH, Canvas
 
-class Window():
+
+class Window:
     def __init__(self, width, height):
         self.__root = Tk()
         self.__root.title("Maze Solver")
@@ -27,29 +28,33 @@ class Window():
     def close(self):
         self.__window_is_running = False
 
-class Point():
+
+class Point:
     def __init__(self, x, y):
         # x = 0 is the left side of the window
         # y = 0 is the top side of the window
         self.x = x
         self.y = y
 
-class Line():
+
+class Line:
     def __init__(self, start_point, end_point):
         self.start_point = start_point
         self.end_point = end_point
 
     def draw(self, canvas, color="black"):
         canvas.create_line(
-            self.start_point.x, 
-            self.start_point.y, 
-            self.end_point.x, 
-            self.end_point.y, 
-            fill=color, 
-            width=2)
+            self.start_point.x,
+            self.start_point.y,
+            self.end_point.x,
+            self.end_point.y,
+            fill=color,
+            width=2,
+        )
         canvas.pack(fill=BOTH, expand=1)
 
-class Cell():
+
+class Cell:
     def __init__(self, window, tl_point, br_point):
         self.top_left_point = tl_point
         self.bottom_right_point = br_point
@@ -63,52 +68,57 @@ class Cell():
         if self.has_left_wall:
             line = Line(
                 Point(self.top_left_point.x, self.top_left_point.y),
-                Point(self.top_left_point.x, self.bottom_right_point.y)
+                Point(self.top_left_point.x, self.bottom_right_point.y),
             )
             self.__window.draw_line(line)
 
         if self.has_top_wall:
             line = Line(
                 Point(self.top_left_point.x, self.top_left_point.y),
-                Point(self.bottom_right_point.x, self.top_left_point.y)
+                Point(self.bottom_right_point.x, self.top_left_point.y),
             )
             self.__window.draw_line(line)
 
         if self.has_right_wall:
             line = Line(
                 Point(self.bottom_right_point.x, self.top_left_point.y),
-                Point(self.bottom_right_point.x, self.bottom_right_point.y)
+                Point(self.bottom_right_point.x, self.bottom_right_point.y),
             )
             self.__window.draw_line(line)
 
         if self.has_bottom_wall:
             line = Line(
                 Point(self.top_left_point.x, self.bottom_right_point.y),
-                Point(self.bottom_right_point.x, self.bottom_right_point.y)
+                Point(self.bottom_right_point.x, self.bottom_right_point.y),
             )
             self.__window.draw_line(line)
 
     def draw_move(self, target_cell, undo=False):
-
         if undo is False:
             line_color = "red"
         else:
             line_color = "gray"
 
         self.center = Point(
-            self.top_left_point.x + (self.bottom_right_point.x - self.top_left_point.x) / 2,
-            self.top_left_point.y + (self.bottom_right_point.y - self.top_left_point.y) / 2
+            self.top_left_point.x
+            + (self.bottom_right_point.x - self.top_left_point.x) / 2,
+            self.top_left_point.y
+            + (self.bottom_right_point.y - self.top_left_point.y) / 2,
         )
 
         target_cell_center = Point(
-            target_cell.top_left_point.x + (target_cell.bottom_right_point.x - target_cell.top_left_point.x) / 2,
-            target_cell.top_left_point.y + (target_cell.bottom_right_point.y - target_cell.top_left_point.y) / 2
+            target_cell.top_left_point.x
+            + (target_cell.bottom_right_point.x - target_cell.top_left_point.x) / 2,
+            target_cell.top_left_point.y
+            + (target_cell.bottom_right_point.y - target_cell.top_left_point.y) / 2,
         )
 
         self.__window.draw_line(Line(self.center, target_cell_center), line_color)
-  
+
+
 def main():
     pass
+
 
 if __name__ == "__main__":
     main()
