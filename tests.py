@@ -55,6 +55,26 @@ class Tests(unittest.TestCase):
         self.assertTrue(m4.cells[num_cols - 1][num_rows - 1].has_top_wall)
         self.assertFalse(m4.cells[num_cols - 1][num_rows - 1].has_bottom_wall)
 
+    def test_reset_visited_state(self):
+        num_cols = 8
+        num_rows = 6
+        cell_size = 20
+        win = None  # No window provided for testing
+        m = Maze(0, 0, num_rows, num_cols, cell_size, cell_size, win)
+
+        # Set the visited state of some cells to True
+        m.cells[1][1].visited = True
+        m.cells[2][3].visited = True
+        m.cells[5][4].visited = True
+
+        # Reset the visited state
+        m._Maze__reset_visited_state()
+
+        # Check if the visited state is reset for all cells
+        for col in m.cells:
+            for cell in col:
+                self.assertFalse(cell.visited)
+
 
 if __name__ == "__main__":
     unittest.main()

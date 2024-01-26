@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from tkinter import Tk, BOTH, Canvas
-import time
+import time, random
 
 
 class Window:
@@ -64,6 +64,7 @@ class Cell:
         self.has_top_wall = True
         self.has_right_wall = True
         self.has_bottom_wall = True
+        self.visited = False
 
     def draw(self):
         line_color_left = "black" if self.has_left_wall else "white"
@@ -169,6 +170,8 @@ class Maze:
                 self.__animate()
         self.__break_entrance_and_exit()
         self.__animate()
+        self.__break_walls_r(0, 0)
+        self.__reset_visited_state()
 
     def __animate(self):
         if self.win is not None:
@@ -182,6 +185,49 @@ class Maze:
         if self.win is not None:
             self.cells[0][0].draw()
             self.cells[self.num_cols - 1][self.num_rows - 1].draw()
+
+    def __break_walls_r(self, x, y):
+        self.cells[x][y].visited = True
+
+        while True:
+            non_visited_cells = []
+            if x - 1 >= 0 and not self.cells[x - 1][y].visited:
+                non_visited_cells.append([x - 1, y])
+            if x + 1 < self.num_cols and not self.cells[x + 1][y].visited:
+                non_visited_cells.append([x + 1, y])
+            if y - 1 >= 0 and not self.cells[x][y - 1].visited:
+                non_visited_cells.append([x, y - 1])
+            if y + 1 < self.num_rows and not self.cells[x][y + 1].visited:
+                non_visited_cells.append([x, y + 1])
+            if len(non_visited_cells) == 0:
+                self.cells[x][y].draw()
+                return
+            else:
+                next_cell = random.choice(non_visited_cells)
+                non_visited_cells.remove(next_cell)
+
+                if x - 1 == next_cell[0]:
+                    self.cells[x][y].has_left_wall = False
+                    self.cells[next_cell[0]][next_cell[1]].has_right_wall = False
+                elif x + 1 == next_cell[0]:
+                    self.cells[x][y].has_right_wall = False
+                    self.cells[next_cell[0]][next_cell[1]].has_left_wall = False
+                elif y - 1 == next_cell[1]:
+                    self.cells[x][y].has_top_wall = False
+                    self.cells[next_cell[0]][next_cell[1]].has_bottom_wall = False
+                elif y + 1 == next_cell[1]:
+                    self.cells[x][y].has_bottom_wall = False
+                    self.cells[next_cell[0]][next_cell[1]].has_top_wall = False
+
+                self.cells[x][y].draw()
+                self.cells[next_cell[0]][next_cell[1]].draw()
+
+                self.__break_walls_r(next_cell[0], next_cell[1])
+
+    def __reset_visited_state(self):
+        for x in range(0, self.num_cols):
+            for y in range(0, self.num_rows):
+                self.cells[x][y].visited = False
 
 
 def main():
