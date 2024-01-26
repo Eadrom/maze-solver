@@ -10,7 +10,7 @@ class Window:
         self.__root.title("Maze Solver")
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
         self.__root.resizable(0, 0)
-        self.__canvas = Canvas(self.__root, width=width, height=height)
+        self.__canvas = Canvas(self.__root, width=width, height=height, bg="white")
         self.__canvas.pack(fill=BOTH, expand=1)
         self.__window_is_running = False
 
@@ -39,7 +39,7 @@ class Point:
 
 
 class Line:
-    def __init__(self, start_point, end_point):
+    def __init__(self, start_point, end_point, color="black"):
         self.start_point = start_point
         self.end_point = end_point
 
@@ -66,33 +66,37 @@ class Cell:
         self.has_bottom_wall = True
 
     def draw(self):
-        if self.has_left_wall:
-            line = Line(
-                Point(self.top_left_point.x, self.top_left_point.y),
-                Point(self.top_left_point.x, self.bottom_right_point.y),
-            )
-            self.__window.draw_line(line)
+        line_color_left = "black" if self.has_left_wall else "white"
+        line = Line(
+            Point(self.top_left_point.x, self.top_left_point.y),
+            Point(self.top_left_point.x, self.bottom_right_point.y),
+            color=line_color_left,
+        )
+        self.__window.draw_line(line, color=line_color_left)
 
-        if self.has_top_wall:
-            line = Line(
-                Point(self.top_left_point.x, self.top_left_point.y),
-                Point(self.bottom_right_point.x, self.top_left_point.y),
-            )
-            self.__window.draw_line(line)
+        line_color_top = "black" if self.has_top_wall else "white"
+        line = Line(
+            Point(self.top_left_point.x, self.top_left_point.y),
+            Point(self.bottom_right_point.x, self.top_left_point.y),
+            color=line_color_top,
+        )
+        self.__window.draw_line(line, color=line_color_top)
 
-        if self.has_right_wall:
-            line = Line(
-                Point(self.bottom_right_point.x, self.top_left_point.y),
-                Point(self.bottom_right_point.x, self.bottom_right_point.y),
-            )
-            self.__window.draw_line(line)
+        line_color_right = "black" if self.has_right_wall else "white"
+        line = Line(
+            Point(self.bottom_right_point.x, self.top_left_point.y),
+            Point(self.bottom_right_point.x, self.bottom_right_point.y),
+            color=line_color_right,
+        )
+        self.__window.draw_line(line, color=line_color_right)
 
-        if self.has_bottom_wall:
-            line = Line(
-                Point(self.top_left_point.x, self.bottom_right_point.y),
-                Point(self.bottom_right_point.x, self.bottom_right_point.y),
-            )
-            self.__window.draw_line(line)
+        line_color_bottom = "black" if self.has_bottom_wall else "white"
+        line = Line(
+            Point(self.top_left_point.x, self.bottom_right_point.y),
+            Point(self.bottom_right_point.x, self.bottom_right_point.y),
+            color=line_color_bottom,
+        )
+        self.__window.draw_line(line, color=line_color_bottom)
 
     def draw_move(self, target_cell, undo=False):
         if undo is False:
@@ -163,11 +167,21 @@ class Maze:
             for w in range(0, self.num_rows):
                 self.cells[l][w].draw()
                 self.__animate()
+        self.__break_entrance_and_exit()
+        self.__animate()
 
     def __animate(self):
         if self.win is not None:
             self.win.redraw()
             time.sleep(0.01)
+
+    def __break_entrance_and_exit(self):
+        self.cells[0][0].has_top_wall = False
+        self.cells[self.num_cols - 1][self.num_rows - 1].has_bottom_wall = False
+
+        if self.win is not None:
+            self.cells[0][0].draw()
+            self.cells[self.num_cols - 1][self.num_rows - 1].draw()
 
 
 def main():

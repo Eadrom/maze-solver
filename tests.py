@@ -40,6 +40,21 @@ class Tests(unittest.TestCase):
         # Ensure calling animate method does not raise an exception
         m3._Maze__animate()
 
+    def test_maze_break_entrance_exit(self):
+        num_cols = 10
+        num_rows = 8
+        cell_size = 15
+        m4 = Maze(0, 0, num_rows, num_cols, cell_size, cell_size, None)
+
+        # Break entrance and exit walls
+        m4._Maze__break_entrance_and_exit()
+
+        # Check if entrance and exit walls are broken
+        self.assertFalse(m4.cells[0][0].has_top_wall)
+        self.assertTrue(m4.cells[0][0].has_bottom_wall)
+        self.assertTrue(m4.cells[num_cols - 1][num_rows - 1].has_top_wall)
+        self.assertFalse(m4.cells[num_cols - 1][num_rows - 1].has_bottom_wall)
+
 
 if __name__ == "__main__":
     unittest.main()
