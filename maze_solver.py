@@ -15,6 +15,7 @@ def main():
     num_rows = (maze_height - 2 * border_size) // cell_size
 
     maze = Maze(border_size, border_size, num_rows, num_cols, cell_size, cell_size, win)
+    win.maze = maze
 
     win.wait_for_close()
 

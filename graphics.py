@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from tkinter import Tk, BOTH, Canvas
+from tkinter import Tk, BOTH, Canvas, messagebox
 import time, random
 
 
@@ -13,6 +13,33 @@ class Window:
         self.__canvas = Canvas(self.__root, width=width, height=height, bg="white")
         self.__canvas.pack(fill=BOTH, expand=1)
         self.__window_is_running = False
+        self.__canvas.bind("<Button-1>", self.click_handler)
+        self.show_info_popup()
+        self.maze = None
+
+    def show_info_popup(self):
+        instructions_title = "Welcome!"
+        instructions_info = "Welcome to Maze Solver!\nClick inside the window to solve the maze.\nOnce the maze is solved, click again in the window to reset it."
+        popup = messagebox.showinfo(instructions_title, instructions_info)
+
+    def click_handler(self, event):
+        # Function to execute when clicking inside the window
+        if self.maze.is_solved is True:
+            self.__canvas.delete("all")
+            self.maze = self.generate_new_maze(self.maze)
+        else:
+            self.maze.solve()
+
+    def generate_new_maze(self, maze):
+        return Maze(
+            maze.x1,
+            maze.y1,
+            maze.num_rows,
+            maze.num_cols,
+            maze.cell_size_x,
+            maze.cell_size_y,
+            maze.win,
+        )
 
     def redraw(self):
         self.__root.update_idletasks()
@@ -103,7 +130,7 @@ class Cell:
         if undo is False:
             line_color = "red"
         else:
-            line_color = "gray"
+            line_color = "white"
 
         self.center = Point(
             self.top_left_point.x
@@ -142,6 +169,7 @@ class Maze:
         self.win = win
         self.cells = []
         self.__create_cells()
+        self.is_solved = False
 
     def __create_cells(self):
         for l in range(0, self.num_cols):
@@ -228,6 +256,64 @@ class Maze:
         for x in range(0, self.num_cols):
             for y in range(0, self.num_rows):
                 self.cells[x][y].visited = False
+
+    def solve(self):
+        self.__solve_r(0, 0)
+
+    def __solve_r(self, x, y):
+        self.__animate()
+        # mark the current cell as visited
+        self.cells[x][y].visited = True
+        # check if we're at the end of the maze
+        if x == self.num_cols - 1 and y == self.num_rows - 1:
+            self.is_solved = True
+            return True
+        # check if neighbors exist, are unvisited, and can be moved to (no wall facing that neighbor and that neighbor has no wall facing current cell)
+        if (
+            x - 1 >= 0
+            and not self.cells[x - 1][y].visited
+            and not self.cells[x][y].has_left_wall
+            and not self.cells[x - 1][y].has_right_wall
+        ):
+            self.cells[x][y].draw_move(self.cells[x - 1][y])
+            if self.__solve_r(x - 1, y):
+                return True
+            else:
+                self.cells[x][y].draw_move(self.cells[x - 1][y], True)
+        if (
+            x + 1 < self.num_cols
+            and not self.cells[x + 1][y].visited
+            and not self.cells[x][y].has_right_wall
+            and not self.cells[x + 1][y].has_left_wall
+        ):
+            self.cells[x][y].draw_move(self.cells[x + 1][y])
+            if self.__solve_r(x + 1, y):
+                return True
+            else:
+                self.cells[x][y].draw_move(self.cells[x + 1][y], True)
+        if (
+            y - 1 >= 0
+            and not self.cells[x][y - 1].visited
+            and not self.cells[x][y].has_top_wall
+            and not self.cells[x][y - 1].has_bottom_wall
+        ):
+            self.cells[x][y].draw_move(self.cells[x][y - 1])
+            if self.__solve_r(x, y - 1):
+                return True
+            else:
+                self.cells[x][y].draw_move(self.cells[x][y - 1], True)
+        if (
+            y + 1 < self.num_rows
+            and not self.cells[x][y + 1].visited
+            and not self.cells[x][y].has_bottom_wall
+            and not self.cells[x][y + 1].has_top_wall
+        ):
+            self.cells[x][y].draw_move(self.cells[x][y + 1])
+            if self.__solve_r(x, y + 1):
+                return True
+            else:
+                self.cells[x][y].draw_move(self.cells[x][y + 1], True)
+        return False
 
 
 def main():
