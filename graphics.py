@@ -56,7 +56,7 @@ class Line:
 
 
 class Cell:
-    def __init__(self, window, tl_point, br_point):
+    def __init__(self, tl_point, br_point, window=None):
         self.top_left_point = tl_point
         self.bottom_right_point = br_point
         self.__window = window
@@ -126,7 +126,7 @@ class Maze:
         num_cols,
         cell_size_x,
         cell_size_y,
-        win,
+        win=None,
     ):
         self.x1 = x1
         self.y1 = y1
@@ -144,7 +144,6 @@ class Maze:
             for w in range(0, self.num_rows):
                 self.cells[l].append(
                     Cell(
-                        self.win,
                         Point(
                             self.x1 + l * self.cell_size_x,
                             self.y1 + w * self.cell_size_y,
@@ -153,9 +152,11 @@ class Maze:
                             self.x1 + l * self.cell_size_x + self.cell_size_x,
                             self.y1 + w * self.cell_size_y + self.cell_size_y,
                         ),
+                        self.win,
                     )
                 )
-        self.__draw_cells()
+        if self.win is not None:
+            self.__draw_cells()
 
     def __draw_cells(self):
         for l in range(0, self.num_cols):
@@ -164,8 +165,9 @@ class Maze:
                 self.__animate()
 
     def __animate(self):
-        self.win.redraw()
-        time.sleep(0.01)
+        if self.win is not None:
+            self.win.redraw()
+            time.sleep(0.01)
 
 
 def main():
